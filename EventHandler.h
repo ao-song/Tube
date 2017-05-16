@@ -6,11 +6,10 @@ namespace Tube
 	class EventHandler
 	{
 	public:
-
 		
 		EventHandler(
-		 EventHandlerTable*  theEventHandlerTable,
-		 EventHandlerParent* theEventHandlerParent);
+		    EventHandlerTable*  theEventHandlerTable,
+		    EventHandlerParent* theEventHandlerParent);
 
 		/**
 		* Destructor.
@@ -24,7 +23,8 @@ namespace Tube
 		
 		virtual
 		bool
-		epoll_ctl(unsigned int previousRequestedEvents = 0);
+		epoll_ctl(
+			unsigned int previousRequestedEvents = 0);
 
 		
 		EventHandlerOwner*
@@ -32,7 +32,8 @@ namespace Tube
 
 		
 		void
-		set_owner(eventHandlerOwner* theEventHandlerOwner);
+		set_owner(
+			eventHandlerOwner* theEventHandlerOwner);
 
 		
 		EventHandlerTable*
@@ -51,34 +52,34 @@ namespace Tube
 		virtual
 		bool
 		handle_event(
-		 unsigned int theEvent) = 0;
+		    unsigned int theEvent) = 0;
 
 		
 		void
 		local_address_to_stream(
-		 std::ostream& theStream) const;
+		    std::ostream& theStream) const;
 
 		
 		void
 		remote_address_to_stream(
-		 std::ostream& theStream) const;
+		    std::ostream& theStream) const;
 
 		
 		virtual
 		void
 		reset_requested_events(
-		 unsigned int theEventsToReset);
+		    unsigned int theEventsToReset);
 
 		
 		virtual
 		void
 		set_requested_events(
-		 unsigned int theEventsToSet);
+		    unsigned int theEventsToSet);
 
 		
 		void
 		set_socket(
-		 int theSocket);
+		    int theSocket);
 
 		
 		virtual
@@ -91,7 +92,8 @@ namespace Tube
 		is_want_write() const;
 
 		void
-		change_event_handler_table(EventHandlerTable* theTable);
+		change_event_handler_table(
+			EventHandlerTable* theTable);
 
 		virtual
 		void
@@ -101,18 +103,18 @@ namespace Tube
 
 		// Copy constructor not implemented.		
 		EventHandler(
-		 const EventHandler& theOther);
+		    const EventHandler& theOther);
 
 		// Assignment operator not implemented.		
 		EventHandler&
 		operator=(
-		 const EventHandler& theOther);
+		    const EventHandler& theOther);
 
 		void
 		address_tostream_impl(
-		 std::ostream& theStream,
-		 const sockaddr_storage&,
-		 socklen_t&) const;
+		    std::ostream& theStream,
+		    const sockaddr_storage&,
+		    socklen_t&) const;
 
 		EventHandlerOwner*  eventHandlerOwnerM;
 		EventHandlerTable*  eventHandlerTableM;
