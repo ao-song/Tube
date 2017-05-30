@@ -8,8 +8,8 @@ namespace Tube
 	public:
 		
 		EventHandler(
-		    EventHandlerTable*  theEventHandlerTable,
-		    EventHandlerParent* theEventHandlerParent);
+		    EventHandlerTable*  eventHandlerTable,
+            EventHandlerOwner*  eventHandlerOwner);
 
 		/**
 		* Destructor.
@@ -25,15 +25,6 @@ namespace Tube
 		bool
 		epoll_ctl(
 			unsigned int previousRequestedEvents = 0);
-
-		
-		EventHandlerOwner*
-		get_owner();
-
-		
-		void
-		set_owner(
-			eventHandlerOwner* theEventHandlerOwner);
 
 		
 		EventHandlerTable*
@@ -52,34 +43,34 @@ namespace Tube
 		virtual
 		bool
 		handle_event(
-		    unsigned int theEvent) = 0;
+		    unsigned int event) = 0;
 
 		
 		void
 		local_address_to_stream(
-		    std::ostream& theStream) const;
+		    std::ostream& stream) const;
 
 		
 		void
 		remote_address_to_stream(
-		    std::ostream& theStream) const;
+		    std::ostream& stream) const;
 
 		
 		virtual
 		void
 		reset_requested_events(
-		    unsigned int theEventsToReset);
+		    unsigned int eventsToReset);
 
 		
 		virtual
 		void
 		set_requested_events(
-		    unsigned int theEventsToSet);
+		    unsigned int eventsToSet);
 
 		
 		void
 		set_socket(
-		    int theSocket);
+		    int socket);
 
 		
 		virtual
@@ -93,7 +84,7 @@ namespace Tube
 
 		void
 		change_event_handler_table(
-			EventHandlerTable* theTable);
+			EventHandlerTable* table);
 
 		virtual
 		void
@@ -103,16 +94,16 @@ namespace Tube
 
 		// Copy constructor not implemented.		
 		EventHandler(
-		    const EventHandler& theOther);
+		    const EventHandler& other);
 
 		// Assignment operator not implemented.		
 		EventHandler&
 		operator=(
-		    const EventHandler& theOther);
+		    const EventHandler& other);
 
 		void
 		address_tostream_impl(
-		    std::ostream& theStream,
+		    std::ostream& stream,
 		    const sockaddr_storage&,
 		    socklen_t&) const;
 
