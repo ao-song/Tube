@@ -25,6 +25,15 @@ EventHandler::~EventHandler()
 
 // ----------------------------------------------------------------------------
 
+bool
+EventHandler::epoll_ctl(
+	unsigned int previousRequestedEvents)
+{
+	
+}
+
+// ----------------------------------------------------------------------------
+
 inline
 void
 EventHandler::close()
@@ -58,6 +67,7 @@ EventHandler::get_socket() const
 	return socketM;
 }
 
+// ----------------------------------------------------------------------------
 
 inline
 EventHandler::set_socket(
@@ -67,6 +77,7 @@ EventHandler::set_socket(
 	socketM = socket;
 }
 
+// ----------------------------------------------------------------------------
 
 inline
 unsigned int
@@ -74,3 +85,43 @@ EventHandler::get_subscribed_events() const
 {
 	return subscribedEventsM;
 }
+
+// ----------------------------------------------------------------------------
+
+inline
+void
+EventHandler::reset_subscribed_events(
+    unsigned int eventsToReset)
+{
+	subscribedEventsM &= (~eventsToReset);
+}
+
+// ----------------------------------------------------------------------------
+
+inline
+void
+EventHandler::set_subscribed_events(
+    unsigned int eventsToSet)
+{
+	subscribedEventsM |= eventsToSet;
+}
+
+// ----------------------------------------------------------------------------
+
+inline
+bool
+EventHandler::is_want_read() const
+{
+	return (subscribedEventsM & EPOLLIN) != 0;
+}
+
+// ----------------------------------------------------------------------------
+
+inline
+bool
+EventHandler::is_want_write() const
+{
+	return (subscribedEventsM & EPOLLOUT) != 0;
+}
+
+// ----------------------------------------------------------------------------
