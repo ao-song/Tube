@@ -24,19 +24,22 @@ namespace Tube
 		void
 		close();
 
-		
-		virtual
-		bool
-		epoll_ctl(
-			unsigned int previousRequestedEvents = 0);
+		void
+		set_socket(
+		    int socket);
 
-		
 		EventHandlerTable*
 		get_table();
 
 		
 		int
 		get_socket() const;
+
+		
+		virtual
+		bool
+		epoll_ctl(
+			unsigned int previousRequestedEvents = 0);		
 
 		
 		virtual
@@ -60,12 +63,7 @@ namespace Tube
 		virtual
 		void
 		set_subscribed_events(
-		    unsigned int eventsToSet);
-
-		
-		void
-		set_socket(
-		    int socket);
+		    unsigned int eventsToSet);		
 
 		
 		virtual
