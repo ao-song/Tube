@@ -29,7 +29,7 @@ bool
 EventHandler::epoll_ctl(
 	unsigned int previousRequestedEvents)
 {
-	
+
 }
 
 // ----------------------------------------------------------------------------
@@ -81,7 +81,7 @@ EventHandler::set_socket(
 
 inline
 unsigned int
-EventHandler::get_subscribed_events() const
+EventHandler::get_events() const
 {
 	return subscribedEventsM;
 }
@@ -90,7 +90,7 @@ EventHandler::get_subscribed_events() const
 
 inline
 void
-EventHandler::reset_subscribed_events(
+EventHandler::reset_events(
     unsigned int eventsToReset)
 {
 	subscribedEventsM &= (~eventsToReset);
@@ -99,11 +99,45 @@ EventHandler::reset_subscribed_events(
 // ----------------------------------------------------------------------------
 
 inline
-void
-EventHandler::set_subscribed_events(
+bool
+EventHandler::set_events(
     unsigned int eventsToSet)
 {
+	unsigned int prevSubscribedEvents = subscribedEventsM;
+
 	subscribedEventsM |= eventsToSet;
+
+	if(prevSubscribedEvents == 0)
+	{
+		if(eventHandlerTableM->add_event(socketM,
+			                             subscribedEventsM,
+			                             this) == false)
+		{
+			LOG_ERROR("EventHandler::set_events() add event failed.\n");
+			return false;
+		}
+	}
+
+	if(subscribedEventsM != 0)
+	{
+		if(eventHandlerTableM->modify_event(socketM,
+			                                subscribedEventsM,
+			                                this) == false)
+		{
+			LOG_ERROR("EventHandler::set_events() modify event failed.\n");
+			return false;
+		}
+	}
+    else
+    {
+    	if(eventHandlerTableM->delete_event(socketM) == false)
+    	{
+    		LOG_ERROR("EventHandler::set_events() delete event failed.\n");
+    		return false;
+    	}
+    }
+
+    return true;
 }
 
 // ----------------------------------------------------------------------------
