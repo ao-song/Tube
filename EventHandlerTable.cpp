@@ -83,7 +83,7 @@ EventHandlerTable::modify_event(
 // ----------------------------------------------------------------------------
 
 bool
-EventHandlerTable::handleEvents()
+EventHandlerTable::handle_events()
 {
    typedef std::set<EventHandler*> EventHandlerSet;
    EventHandlerSet deleteList;

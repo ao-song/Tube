@@ -1,6 +1,10 @@
 #ifndef EVENTHANDLER_H
 #define EVENTHANDLER_H
 
+#include <cassert>
+#include <sys/epoll.h>
+
+
 namespace Tube
 {
 	class EventHandler
@@ -37,7 +41,7 @@ namespace Tube
 		
 		virtual
 		unsigned int
-		get_request_events() const;
+		get_subscribed_events() const;
 
 		
 		virtual
@@ -46,25 +50,16 @@ namespace Tube
 		    unsigned int event) = 0;
 
 		
-		void
-		local_address_to_stream(
-		    std::ostream& stream) const;
-
-		
-		void
-		remote_address_to_stream(
-		    std::ostream& stream) const;
-
-		
+	
 		virtual
 		void
-		reset_requested_events(
+		reset_subscribed_events(
 		    unsigned int eventsToReset);
 
 		
 		virtual
 		void
-		set_requested_events(
+		set_subscribed_events(
 		    unsigned int eventsToSet);
 
 		
@@ -82,10 +77,6 @@ namespace Tube
 		bool
 		is_want_write() const;
 
-		void
-		change_event_handler_table(
-			EventHandlerTable* table);
-
 		virtual
 		void
 		remove () = 0;
@@ -101,15 +92,10 @@ namespace Tube
 		operator=(
 		    const EventHandler& other);
 
-		void
-		address_tostream_impl(
-		    std::ostream& stream,
-		    const sockaddr_storage&,
-		    socklen_t&) const;
 
-		EventHandlerOwner*  eventHandlerOwnerM;
-		EventHandlerTable*  eventHandlerTableM;
-		unsigned int        requestedEventsM;
+        EventHandlerTable*  eventHandlerTableM;
+		EventHandlerOwner*  eventHandlerOwnerM;		
+		unsigned int        subscribedEventsM;
 		int                 socketM;
 	};
 }
