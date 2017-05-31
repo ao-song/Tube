@@ -44,7 +44,7 @@ namespace Tube
 		
 		virtual
 		unsigned int
-		get_subscribed_events() const;
+		get_events() const;
 
 		
 		virtual
@@ -56,13 +56,13 @@ namespace Tube
 	
 		virtual
 		void
-		reset_subscribed_events(
+		reset_events(
 		    unsigned int eventsToReset);
 
 		
 		virtual
-		void
-		set_subscribed_events(
+		bool
+		set_events(
 		    unsigned int eventsToSet);		
 
 		
