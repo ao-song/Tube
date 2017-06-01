@@ -13,7 +13,7 @@ EventHandler::EventHandler(
     subscribedEventsM(0),
     socketM(-1)
 {
-	// Empty
+    // Empty
 }
 
 // ----------------------------------------------------------------------------
@@ -27,7 +27,7 @@ EventHandler::~EventHandler()
 
 bool
 EventHandler::epoll_ctl(
-	unsigned int previousRequestedEvents)
+    unsigned int previousRequestedEvents)
 {
 
 }
@@ -38,15 +38,15 @@ inline
 void
 EventHandler::close()
 {
-	if(socketM != -1)
-	{
-		if(subscribedEventsM != 0)
-		{
-			eventHandlerTableM->delete_event(socketM);
-		}
-		::close(socketM);
-		socketM = -1;
-	}
+    if(socketM != -1)
+    {
+        if(subscribedEventsM != 0)
+        {
+            eventHandlerTableM->delete_event(socketM);
+        }
+        ::close(socketM);
+        socketM = -1;
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -55,7 +55,7 @@ inline
 EventHandlerTable*
 EventHandler::get_table()
 {
-	return eventHandlerTableM;
+    return eventHandlerTableM;
 }
 
 // ----------------------------------------------------------------------------
@@ -64,7 +64,7 @@ inline
 int
 EventHandler::get_socket() const
 {
-	return socketM;
+    return socketM;
 }
 
 // ----------------------------------------------------------------------------
@@ -73,8 +73,8 @@ inline
 EventHandler::set_socket(
     int socket)
 {
-	assert(socketM == -1);
-	socketM = socket;
+    assert(socketM == -1);
+    socketM = socket;
 }
 
 // ----------------------------------------------------------------------------
@@ -83,7 +83,7 @@ inline
 unsigned int
 EventHandler::get_events() const
 {
-	return subscribedEventsM;
+    return subscribedEventsM;
 }
 
 // ----------------------------------------------------------------------------
@@ -93,7 +93,7 @@ void
 EventHandler::reset_events(
     unsigned int eventsToReset)
 {
-	subscribedEventsM &= (~eventsToReset);
+    subscribedEventsM &= (~eventsToReset);
 }
 
 // ----------------------------------------------------------------------------
@@ -103,38 +103,38 @@ bool
 EventHandler::set_events(
     unsigned int eventsToSet)
 {
-	unsigned int prevSubscribedEvents = subscribedEventsM;
+    unsigned int prevSubscribedEvents = subscribedEventsM;
 
-	subscribedEventsM |= eventsToSet;
+    subscribedEventsM |= eventsToSet;
 
-	if(prevSubscribedEvents == 0)
-	{
-		if(eventHandlerTableM->add_event(socketM,
-			                             subscribedEventsM,
-			                             this) == false)
-		{
-			LOG_ERROR("EventHandler::set_events() add event failed.\n");
-			return false;
-		}
-	}
+    if(prevSubscribedEvents == 0)
+    {
+        if(eventHandlerTableM->add_event(socketM,
+                                         subscribedEventsM,
+                                         this) == false)
+        {
+            LOG_ERROR("EventHandler::set_events() add event failed.\n");
+            return false;
+        }
+    }
 
-	if(subscribedEventsM != 0)
-	{
-		if(eventHandlerTableM->modify_event(socketM,
-			                                subscribedEventsM,
-			                                this) == false)
-		{
-			LOG_ERROR("EventHandler::set_events() modify event failed.\n");
-			return false;
-		}
-	}
+    if(subscribedEventsM != 0)
+    {
+        if(eventHandlerTableM->modify_event(socketM,
+                                            subscribedEventsM,
+                                            this) == false)
+        {
+            LOG_ERROR("EventHandler::set_events() modify event failed.\n");
+            return false;
+        }
+    }
     else
     {
-    	if(eventHandlerTableM->delete_event(socketM) == false)
-    	{
-    		LOG_ERROR("EventHandler::set_events() delete event failed.\n");
-    		return false;
-    	}
+        if(eventHandlerTableM->delete_event(socketM) == false)
+        {
+            LOG_ERROR("EventHandler::set_events() delete event failed.\n");
+            return false;
+        }
     }
 
     return true;
@@ -146,7 +146,7 @@ inline
 bool
 EventHandler::is_want_read() const
 {
-	return (subscribedEventsM & EPOLLIN) != 0;
+    return (subscribedEventsM & EPOLLIN) != 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -155,7 +155,7 @@ inline
 bool
 EventHandler::is_want_write() const
 {
-	return (subscribedEventsM & EPOLLOUT) != 0;
+    return (subscribedEventsM & EPOLLOUT) != 0;
 }
 
 // ----------------------------------------------------------------------------
