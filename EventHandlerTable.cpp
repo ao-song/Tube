@@ -7,11 +7,11 @@ using namespace Tube;
 inline
 EventHandlerTable::EventHandlerTable()
 {
-	FdM = epoll_create(EpollSizeE);
+    FdM = epoll_create(EpollSizeE);
 
-	EventsM = new epoll_event[EpollSizeE];
+    EventsM = new epoll_event[EpollSizeE];
 
-	memset(&EventM, 0, sizeof(EventM));
+    memset(&EventM, 0, sizeof(EventM));
 }
 
 // ----------------------------------------------------------------------------
@@ -19,7 +19,7 @@ EventHandlerTable::EventHandlerTable()
 inline
 EventHandlerTable::~EventHandlerTable()
 {
-	if(FdM != -1)
+    if(FdM != -1)
     {
         close(FdM);
         FdM = -1;
