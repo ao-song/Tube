@@ -2,6 +2,8 @@
 
 using namespace Tube;
 
+// ----------------------------------------------------------------------------
+
 bool
 InetAddress::init(
 	const char* ipStr)
@@ -97,6 +99,8 @@ InetAddress::init(
 		ipStr++;
 	}
 }
+
+// ----------------------------------------------------------------------------
 
 bool
 InetAddress::init(
