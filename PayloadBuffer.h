@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <memory>
 
 namespace Tube
 {
@@ -63,9 +64,9 @@ namespace Tube
 
 	    	~Chunk();
 
-	    	char*  dataM;
-	    	size_t lengthM;
-	    	Chunk* nextM;
+	    	unsigned char* dataM;
+	    	size_t         lengthM;
+	    	Chunk*         nextM;
 
 	    private:
 	    	Chunk(
@@ -82,9 +83,9 @@ namespace Tube
 		PayloadBuffer&
 		operator=(const PayloadBuffer&);
 
-		Chunk* firstChunkM;
-		size_t lengthM;
-		size_t offsetM;
+		std::shared_ptr<Chunk> firstChunkM;
+		size_t                 lengthM;
+		size_t                 offsetM;
 	};
 
 // ----------------------------------------------------------------------------
@@ -100,7 +101,7 @@ namespace Tube
 	{
 		if(lengthM > 0)
 		{
-			dataM = new char[lengthM];
+			dataM = new unsigned char[lengthM];
 			memcpy(dataM, ((const char*)data) + offset, lengthM);
 		}
 	}
@@ -114,7 +115,7 @@ namespace Tube
 	{
 		if(lengthM > 0)
 		{
-			dataM = new char[lengthM];
+			dataM = new unsigned char[lengthM];
 		}
 	} 
 
