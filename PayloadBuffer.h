@@ -3,7 +3,8 @@
 
 #include <cassert>
 #include <cstring>
-#include <memory>
+#include <list>
+
 
 namespace Tube
 {
@@ -31,17 +32,13 @@ namespace Tube
 			size_t      length,
 			size_t      offset);
 
-        // data in a chunk
+        // get data from a chunk as an FIFO queue
 		const void*
 		get_data() const;
 
-        // length of the data in a chunk
+        // get the length of the data in a chunk
 		size_t
 		get_length() const;
-
-        // the total length of data in the buffer
-		size_t
-		get_total_length() const;
 
 		void
 		clear();
@@ -83,9 +80,7 @@ namespace Tube
 		PayloadBuffer&
 		operator=(const PayloadBuffer&);
 
-		std::shared_ptr<Chunk> firstChunkM;
-		size_t                 lengthM;
-		size_t                 offsetM;
+		std::list<Chunk> payloadBufferListM;
 	};
 
 // ----------------------------------------------------------------------------
@@ -123,6 +118,97 @@ namespace Tube
 	PayloadBuffer::Chunk::~Chunk()
 	{
 		delete [] dataM;
+	}
+
+	inline
+	PayloadBuffer::PayloadBuffer()
+	: payloadBufferListM(0)
+	{
+		// Empty
+	}
+
+	inline
+	PayloadBuffer::PayloadBuffer(
+		const void* data,
+		size_t      length,
+		size_t      offset)
+	: payloadBufferListM(0)
+	{
+		payloadBufferListM.push_back(
+			std::make_shared<Chunk>(data, length, offset));
+	}
+
+    inline
+	PayloadBuffer::~PayloadBuffer()
+	{
+		clear();
+	}
+
+    inline
+	void
+	PayloadBuffer::append(
+		const void* data,
+		size_t      length)
+	{
+		payloadBufferListM.push_back(
+			std::make_shared<Chunk>(data, length, 0));
+	}
+
+    inline
+	void
+	PayloadBuffer::append(
+		const void* data,
+		size_t      length,
+		size_t      offset)
+	{
+		payloadBufferListM.push_back(
+			std::make_shared<Chunk>(data, length, offset));
+	}
+
+    // get data from a chunk as an FIFO queue
+    inline
+	const void*
+	PayloadBuffer::get_data() const
+	{
+		if(!is_empty())
+		{
+		    Chunk firstChunk = payloadBufferListM.front();
+		    payloadBufferListM.pop_front();
+
+		    return firstChunk.dataM;		
+		}		
+		
+		return 0;
+	}
+
+    // get the length of the data in a chunk
+    inline
+	size_t
+	PayloadBuffer::get_length() const
+	{
+		if(!is_empty())
+		{
+		    Chunk firstChunk = payloadBufferListM.front();
+		    payloadBufferListM.pop_front();
+
+		    return firstChunk.lengthM;		
+		}		
+		
+		return 0;
+	}
+
+    inline
+	void
+	PayloadBuffer::clear()
+	{
+		payloadBufferListM.clear();
+	}
+
+    inline
+	bool
+	PayloadBuffer::is_empty() const
+	{
+		return payloadBufferListM.empty();
 	}
 }
 
