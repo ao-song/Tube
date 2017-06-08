@@ -8,208 +8,208 @@
 
 namespace Tube
 {
-	class PayloadBuffer
-	{
-	public:
-		PayloadBuffer();
+    class PayloadBuffer
+    {
+    public:
+        PayloadBuffer();
 
-		explicit
-		PayloadBuffer(
-			const void* data,
-			size_t      length,
-			size_t      offset);
+        explicit
+        PayloadBuffer(
+            const void* data,
+            size_t      length,
+            size_t      offset);
 
-		~PayloadBuffer();
+        ~PayloadBuffer();
 
-		void
-		append(
-			const void* data,
-			size_t      length);
+        void
+        append(
+            const void* data,
+            size_t      length);
 
-		void
-		append(
-			const void* data,
-			size_t      length,
-			size_t      offset);
+        void
+        append(
+            const void* data,
+            size_t      length,
+            size_t      offset);
 
         // get data from a chunk as an FIFO queue
-		const void*
-		get_data() const;
+        const void*
+        get_data() const;
 
         // get the length of the data in a chunk
-		size_t
-		get_length() const;
+        size_t
+        get_length() const;
 
-		void
-		clear();
+        void
+        clear();
 
-		bool
-		is_empty() const;
+        bool
+        is_empty() const;
 
-	private:
-	    class Chunk
-	    {
-	    public:
-	    	Chunk(
-	    	    const void* data,
-	    	    size_t      length,
-	    	    size_t      offset);
+    private:
+        class Chunk
+        {
+        public:
+            Chunk(
+                const void* data,
+                size_t      length,
+                size_t      offset);
 
-	    	explicit
-	    	Chunk(
-	    		size_t length);
+            explicit
+            Chunk(
+                size_t length);
 
-	    	~Chunk();
+            ~Chunk();
 
-	    	unsigned char* dataM;
-	    	size_t         lengthM;
-	    	Chunk*         nextM;
+            unsigned char* dataM;
+            size_t         lengthM;
+            Chunk*         nextM;
 
-	    private:
-	    	Chunk(
-	    		const Chunk& other);
-	    	Chunk&
-	    	operator=(
-	    		const Chunk& other);
-	    };
+        private:
+            Chunk(
+                const Chunk& other);
+            Chunk&
+            operator=(
+                const Chunk& other);
+        };
 
-	private:
-		PayloadBuffer(
-			const PayloadBuffer& other);
+    private:
+        PayloadBuffer(
+            const PayloadBuffer& other);
 
-		PayloadBuffer&
-		operator=(const PayloadBuffer&);
+        PayloadBuffer&
+        operator=(const PayloadBuffer&);
 
-		std::list<Chunk> payloadBufferListM;
-	};
+        std::list<Chunk> payloadBufferListM;
+    };
 
 // ----------------------------------------------------------------------------
 
-	inline
-	PayloadBuffer::Chunk::Chunk(
-		const void* data,
-		size_t      length,
-		size_t      offset)
-	:   dataM(0),
-	    lengthM(length - offset),
-	    nextM(0)
-	{
-		if(lengthM > 0)
-		{
-			dataM = new unsigned char[lengthM];
-			memcpy(dataM, ((const char*)data) + offset, lengthM);
-		}
-	}
-
-	inline
-	PayloadBuffer::Chunk::Chunk(
-		size_t length)
-	:   dataM(0),
-	    lengthM(length),
-	    nextM(0)
-	{
-		if(lengthM > 0)
-		{
-			dataM = new unsigned char[lengthM];
-		}
-	} 
-
-	inline
-	PayloadBuffer::Chunk::~Chunk()
-	{
-		delete [] dataM;
-	}
-
-	inline
-	PayloadBuffer::PayloadBuffer()
-	: payloadBufferListM(0)
-	{
-		// Empty
-	}
-
-	inline
-	PayloadBuffer::PayloadBuffer(
-		const void* data,
-		size_t      length,
-		size_t      offset)
-	: payloadBufferListM(0)
-	{
-		payloadBufferListM.push_back(
-			std::make_shared<Chunk>(data, length, offset));
-	}
+    inline
+    PayloadBuffer::Chunk::Chunk(
+        const void* data,
+        size_t      length,
+        size_t      offset)
+    :   dataM(0),
+        lengthM(length - offset),
+        nextM(0)
+    {
+        if(lengthM > 0)
+        {
+            dataM = new unsigned char[lengthM];
+            memcpy(dataM, ((const char*)data) + offset, lengthM);
+        }
+    }
 
     inline
-	PayloadBuffer::~PayloadBuffer()
-	{
-		clear();
-	}
+    PayloadBuffer::Chunk::Chunk(
+        size_t length)
+    :   dataM(0),
+        lengthM(length),
+        nextM(0)
+    {
+        if(lengthM > 0)
+        {
+            dataM = new unsigned char[lengthM];
+        }
+    } 
 
     inline
-	void
-	PayloadBuffer::append(
-		const void* data,
-		size_t      length)
-	{
-		payloadBufferListM.push_back(
-			std::make_shared<Chunk>(data, length, 0));
-	}
+    PayloadBuffer::Chunk::~Chunk()
+    {
+        delete [] dataM;
+    }
 
     inline
-	void
-	PayloadBuffer::append(
-		const void* data,
-		size_t      length,
-		size_t      offset)
-	{
-		payloadBufferListM.push_back(
-			std::make_shared<Chunk>(data, length, offset));
-	}
+    PayloadBuffer::PayloadBuffer()
+    : payloadBufferListM(0)
+    {
+        // Empty
+    }
+
+    inline
+    PayloadBuffer::PayloadBuffer(
+        const void* data,
+        size_t      length,
+        size_t      offset)
+    : payloadBufferListM(0)
+    {
+        payloadBufferListM.push_back(
+            Chunk(data, length, offset));
+    }
+
+    inline
+    PayloadBuffer::~PayloadBuffer()
+    {
+        clear();
+    }
+
+    inline
+    void
+    PayloadBuffer::append(
+        const void* data,
+        size_t      length)
+    {
+        payloadBufferListM.push_back(
+            Chunk(data, length, 0));
+    }
+
+    inline
+    void
+    PayloadBuffer::append(
+        const void* data,
+        size_t      length,
+        size_t      offset)
+    {
+        payloadBufferListM.push_back(
+            Chunk(data, length, offset));
+    }
 
     // get data from a chunk as an FIFO queue
     inline
-	const void*
-	PayloadBuffer::get_data() const
-	{
-		if(!is_empty())
-		{
-		    Chunk firstChunk = payloadBufferListM.front();
-		    payloadBufferListM.pop_front();
+    const void*
+    PayloadBuffer::get_data() const
+    {
+        if(!is_empty())
+        {
+            Chunk firstChunk = payloadBufferListM.front();
+            payloadBufferListM.pop_front();
 
-		    return firstChunk.dataM;		
-		}		
-		
-		return 0;
-	}
+            return firstChunk.dataM;        
+        }       
+        
+        return 0;
+    }
 
     // get the length of the data in a chunk
     inline
-	size_t
-	PayloadBuffer::get_length() const
-	{
-		if(!is_empty())
-		{
-		    Chunk firstChunk = payloadBufferListM.front();
-		    payloadBufferListM.pop_front();
+    size_t
+    PayloadBuffer::get_length() const
+    {
+        if(!is_empty())
+        {
+            Chunk firstChunk = payloadBufferListM.front();
+            payloadBufferListM.pop_front();
 
-		    return firstChunk.lengthM;		
-		}		
-		
-		return 0;
-	}
-
-    inline
-	void
-	PayloadBuffer::clear()
-	{
-		payloadBufferListM.clear();
-	}
+            return firstChunk.lengthM;      
+        }       
+        
+        return 0;
+    }
 
     inline
-	bool
-	PayloadBuffer::is_empty() const
-	{
-		return payloadBufferListM.empty();
-	}
+    void
+    PayloadBuffer::clear()
+    {
+        payloadBufferListM.clear();
+    }
+
+    inline
+    bool
+    PayloadBuffer::is_empty() const
+    {
+        return payloadBufferListM.empty();
+    }
 }
 
 #endif
