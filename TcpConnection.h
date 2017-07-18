@@ -1,11 +1,27 @@
 #ifndef TCPCONNECTION_H
 #define TCPCONNECTION_H
 
+// ----------------------------------------------------------------------------
+
 namespace Tube
 {
     class TcpConnection : public EventHandler
     {
     public:
+
+        typedef enum
+        {
+            CallAgain,
+            RemoveConnection,
+            WaitForEvent
+        } Action; 
+
+        typedef enum
+        {
+            Idle,
+            Connecting,
+            Established
+        } State; 
 
         TcpConnection(
             EventHandlerTable*  eventHandlerTable,
@@ -27,9 +43,8 @@ namespace Tube
         connect(
             const InetAddress& destinationIp,
             unsigned short     destinationPort,
-            unsigned int       sendingBufferSize,
-            unsigned int       receivingBufferSize);
-
+            unsigned int       sendingBufferSize = 0,
+            unsigned int       receivingBufferSize = 0);
       
 
         virtual
@@ -93,6 +108,18 @@ namespace Tube
       TcpConnection&
       operator=(
          const TcpConnection& other);
+
+      bool
+      make_non_blocking(
+          int socket);
+
+      bool
+      set_sending_buffer_size(
+          unsigned int sendingBufferSize);
+
+      bool
+      set_receiving_buffer_size(
+          unsigned int receivingBufferSize);
    
       TcpConnectionOwner* connectionOwnerM;
       PayloadBuffer       sendBufferM;

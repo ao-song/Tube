@@ -113,7 +113,6 @@ EventHandler::set_events(
                                          subscribedEventsM,
                                          this) == false)
         {
-            LOG_ERROR("EventHandler::set_events() add event failed.\n");
             return false;
         }
     }
@@ -124,7 +123,6 @@ EventHandler::set_events(
                                             subscribedEventsM,
                                             this) == false)
         {
-            LOG_ERROR("EventHandler::set_events() modify event failed.\n");
             return false;
         }
     }
@@ -132,7 +130,6 @@ EventHandler::set_events(
     {
         if(eventHandlerTableM->delete_event(socketM) == false)
         {
-            LOG_ERROR("EventHandler::set_events() delete event failed.\n");
             return false;
         }
     }
