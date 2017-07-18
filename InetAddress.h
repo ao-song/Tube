@@ -172,13 +172,13 @@ namespace Tube
         {
             addressLength = sizeof(addressM.addrIn4);
             memcpy(&address, &addressM.addrIn4, addressLength);
-            port = ntohs(((struct sockaddr_in*)&address)->sin_port);
+            ((struct sockaddr_in*)&address)->sin_port = htons(port);
         }
         else
         {
             addressLength = sizeof(addressM.addrIn6);
             memcpy(&address, &addressM.addrIn6, addressLength);
-            port = ntohs(((struct sockaddr_in6*)&address)->sin6_port);
+            ((struct sockaddr_in6*)&address)->sin6_port = htons(port);
         }
     }
 
