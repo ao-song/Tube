@@ -103,7 +103,8 @@ TcpConnection::connect(
 // ----------------------------------------------------------------------------
 
 bool
-TcpConnection::make_non_blocking(int socket)
+TcpConnection::make_non_blocking(
+    int socket)
 {
     int flags = fcntl(socket, F_GETFL, 0);
     if (fcntl(socket, F_SETFL, flags | O_NONBLOCK) != 0)
@@ -113,7 +114,8 @@ TcpConnection::make_non_blocking(int socket)
 }
 
 bool
-TcpConnection::set_sending_buffer_size(unsigned int sendingBufferSize)
+TcpConnection::set_sending_buffer_size(
+    unsigned int sendingBufferSize)
 {   
     if(setsockopt(get_socket(),
                   SOL_SOCKET,
@@ -128,7 +130,8 @@ TcpConnection::set_sending_buffer_size(unsigned int sendingBufferSize)
 }
 
 bool
-TcpConnection::set_receiving_buffer_size(unsigned int receivingBufferSize)
+TcpConnection::set_receiving_buffer_size(
+    unsigned int receivingBufferSize)
 {
     if(setsockopt(get_socket(),
                   SOL_SOCKET,
