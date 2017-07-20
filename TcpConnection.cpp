@@ -100,6 +100,13 @@ TcpConnection::connect(
    return connectionOwnerM->handle_events(this, 0); 
 }
 
+bool
+TcpConnection::handle_event(
+    unsigned int event)
+{
+
+}
+
 // ----------------------------------------------------------------------------
 
 bool

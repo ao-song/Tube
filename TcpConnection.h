@@ -127,4 +127,18 @@ namespace Tube
     };
 }
 
+inline
+void
+TcpConnection::fin()
+{
+    shutdown(get_socket(), SHUT_WR);
+}
+
+inline
+TcpConnectionOwner*
+TcpConnection::get_connection_owner()
+{
+    return connectionOwnerM;
+}
+
 #endif
