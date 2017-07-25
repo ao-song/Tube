@@ -226,6 +226,7 @@ TcpConnection::reset()
     if(get_socket() != -1)
     {
         struct linger so_linger;
+        // force exit
         so_linger.l_onoff = 1;
         so_linger.l_linger = 0;
 
