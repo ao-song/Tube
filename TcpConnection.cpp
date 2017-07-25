@@ -104,7 +104,34 @@ bool
 TcpConnection::handle_event(
     unsigned int event)
 {
+    if(event & (EPOLLHUP | EPOLLERR))
+    {
+        return connectionOwnerM->handle_reset(this);
+    }
 
+    switch(stateM)
+    {
+        case Connecting:
+        {            
+            if(event & EPOLLOUT)
+            {
+                stateM = Established;
+                return connectionOwnerM->handle_connect_result(this);
+            }
+
+            break;
+        }
+        case Established:
+        {
+            return connectionOwnerM->handle_events(this, event);
+        }
+        default:
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -150,4 +177,104 @@ TcpConnection::set_receiving_buffer_size(
     }
 
     return true;
+}
+
+Action
+TcpConnection::send(
+    const void* buffer, 
+    size_t      bufferLength)
+{
+    assert(sendBufferM.is_empty());
+
+    const ssize_t sendResult = send(get_socket(),
+                                    buffer,
+                                    bufferLength,
+                                    0);
+ 
+    if (sendResult < 0)
+    {
+        if (errno == EAGAIN)
+        {
+            sendBufferM.append(buffer, bufferLength);
+            set_events(EPOLLOUT);
+            return WaitForEvent;
+        }
+        return RemoveConnection;
+    }
+
+    const size_t bytesSent = static_cast<const size_t>(sendResult);
+
+    if (bytesSent == theBufferLength)
+    {
+        reset_events(EPOLLOUT);
+        return CallAgain;
+    }
+    else
+    {
+        sendBufferM.append(buffer,
+                           bufferLength,
+                           bytesSent);
+        set_events(EPOLLOUT);
+        return WaitForEvent;
+    }
+}
+
+
+void
+TcpConnection::reset()
+{
+    if(get_socket() != -1)
+    {
+        struct linger so_linger;
+        so_linger.l_onoff = 1;
+        so_linger.l_linger = 0;
+
+        setsockopt(get_socket(),
+                   SOL_SOCKET,
+                   SO_LINGER,
+                   &so_linger,
+                   sizeof(so_linger));
+        close();
+    }
+}
+
+Action
+TcpConnection::send_buffered_data()
+{
+    const size_t bufferLength = sendBufferM.get_length();
+    if(bufferLength == 0)
+    {
+        reset_events(EPOLLOUT);
+        return CallAgain;
+    }
+
+    const ssize_t sendResult = send(get_socket(),
+                                    sendBufferM.get_data(),
+                                    bufferLength,
+                                    0);
+
+    if (sendResult < 0)
+    {
+        if (errno == EAGAIN)
+        {
+           set_events(EPOLLOUT);
+           return WaitForEvent;
+        }
+        return RemoveConnection;
+    }
+
+    const size_t bytesSent =
+        static_cast<const size_t>(sendResult);
+
+    if(bytesSent == bufferLength)
+    {
+        assert(sendBufferM.is_empty());
+        reset_events(EPOLLOUT);
+        return CallAgain;
+    }
+    else
+    {
+        set_events(EPOLLOUT);
+        return WaitForEvent;
+    }
 }

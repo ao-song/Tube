@@ -125,20 +125,49 @@ namespace Tube
       PayloadBuffer       sendBufferM;
       State               stateM;
     };
-}
 
-inline
-void
-TcpConnection::fin()
-{
-    shutdown(get_socket(), SHUT_WR);
-}
+// ----------------------------------------------------------------------------
 
-inline
-TcpConnectionOwner*
-TcpConnection::get_connection_owner()
-{
-    return connectionOwnerM;
+    inline
+    void
+    TcpConnection::fin()
+    {
+        shutdown(get_socket(), SHUT_WR);
+    }
+
+    inline
+    TcpConnectionOwner*
+    TcpConnection::get_connection_owner()
+    {
+        return connectionOwnerM;
+    }
+
+    inline
+    bool
+    TcpConnection::is_established() const
+    {
+        return stateM == Established;
+    }
+
+    inline
+    bool
+    TcpConnection::is_ok_to_send() const
+    {
+        return (stateM == Established) && sendBufferM.is_empty();
+    }
+
+    inline
+    ssize_t
+    TcpConnection::receive(
+        void*  buffer, 
+        size_t bufferLength)
+    {
+        return recv(get_socket(), 
+                    buffer, 
+                    bufferLength, 
+                    0);
+    }
+
 }
 
 #endif
