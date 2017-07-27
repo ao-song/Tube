@@ -5,6 +5,9 @@
 
 namespace Tube
 {
+    class EventHandlerTable;
+    class TcpConnectionOwner;
+    
     class TcpConnection : public EventHandler
     {
     public:

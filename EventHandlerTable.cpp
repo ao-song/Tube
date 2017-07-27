@@ -7,9 +7,9 @@ using namespace Tube;
 inline
 EventHandlerTable::EventHandlerTable()
 {
-    FdM = epoll_create(EpollSizeE);
+    FdM = epoll_create(EpollSize);
 
-    EventsM = new epoll_event[EpollSizeE];
+    EventsM = new epoll_event[EpollSize];
 
     memset(&EventM, 0, sizeof(EventM));
 }
@@ -85,13 +85,11 @@ EventHandlerTable::modify_event(
 bool
 EventHandlerTable::handle_events()
 {
-   typedef std::set<EventHandler*> EventHandlerSet;
-   EventHandlerSet deleteList;
 
    int numOfEvents = epoll_wait(FdM,
                                 EventsM,
-                                EpollSizeE,
-                                EpollTimeoutE);
+                                EpollSize,
+                                EpollTimeout);
 
    for (int i = 0; i < numOfEvents; ++i)
    {
@@ -101,7 +99,7 @@ EventHandlerTable::handle_events()
       assert(eventHandler != 0);
       if (eventHandler->handle_event(EventsM[i].events) == false)
       {
-          eventHandler->remove();
+          eventHandler->close();
       }
    }
 

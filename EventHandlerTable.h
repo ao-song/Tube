@@ -13,8 +13,8 @@ namespace Tube
    
         enum 
         {             
-            EpollSizeE     = 5000, //any value bigger than 0
-            EpollTimeoutE  = 0
+            EpollSize     = 5000, //any value bigger than 0
+            EpollTimeout  = 0
         };
 
         EventHandlerTable();

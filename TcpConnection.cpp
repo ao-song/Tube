@@ -83,10 +83,6 @@ TcpConnection::connect(
         {
             // Wait until connect done 
             set_events(EPOLLOUT);
-            if (epoll_ctl() == false)
-            {
-                return false;
-            }
             stateM = Connecting;
             return true;
         }

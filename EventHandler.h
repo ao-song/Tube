@@ -7,6 +7,9 @@
 
 namespace Tube
 {
+    class EventHandlerTable;
+    class EventHandlerOwner;
+
     class EventHandler
     {
     public:
@@ -35,12 +38,8 @@ namespace Tube
         int
         get_socket() const;
 
-        
-        virtual
         bool
-        epoll_ctl(
-            unsigned int previousRequestedEvents = 0);      
-
+        set_et();
         
         virtual
         unsigned int
@@ -74,10 +73,6 @@ namespace Tube
         virtual
         bool
         is_want_write() const;
-
-        virtual
-        void
-        remove () = 0;
 
     private:
 

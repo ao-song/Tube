@@ -25,11 +25,11 @@ EventHandler::~EventHandler()
 
 // ----------------------------------------------------------------------------
 
-bool
-EventHandler::epoll_ctl(
-    unsigned int previousRequestedEvents)
+inline
+void
+EventHandler::set_et()
 {
-
+    subscribedEventsM |= EPOLLET;    
 }
 
 // ----------------------------------------------------------------------------
@@ -109,29 +109,20 @@ EventHandler::set_events(
 
     if(prevSubscribedEvents == 0)
     {
-        if(eventHandlerTableM->add_event(socketM,
-                                         subscribedEventsM,
-                                         this) == false)
-        {
-            return false;
-        }
+        eventHandlerTableM->add_event(socketM,
+                                      subscribedEventsM,
+                                      this);
     }
 
     if(subscribedEventsM != 0)
     {
-        if(eventHandlerTableM->modify_event(socketM,
-                                            subscribedEventsM,
-                                            this) == false)
-        {
-            return false;
-        }
+        eventHandlerTableM->modify_event(socketM,
+                                         subscribedEventsM,
+                                         this);
     }
     else
     {
-        if(eventHandlerTableM->delete_event(socketM) == false)
-        {
-            return false;
-        }
+        eventHandlerTableM->delete_event(socketM);
     }
 
     return true;
