@@ -7,7 +7,7 @@ namespace Tube
 {
     class EventHandlerTable;
     class TcpConnectionOwner;
-    
+
     class TcpConnection : public EventHandler
     {
     public:
@@ -97,7 +97,7 @@ namespace Tube
         send_buffered_data();
 
          
-   private:
+    private:
    
       /**
        * Copy constructor not implemented.
