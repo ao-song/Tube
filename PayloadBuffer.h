@@ -63,7 +63,6 @@ namespace Tube
 
             unsigned char* dataM;
             size_t         lengthM;
-            Chunk*         nextM;
 
         private:
             Chunk(
@@ -91,8 +90,7 @@ namespace Tube
         size_t      length,
         size_t      offset)
     :   dataM(0),
-        lengthM(length - offset),
-        nextM(0)
+        lengthM(length - offset)
     {
         if(lengthM > 0)
         {
@@ -105,8 +103,7 @@ namespace Tube
     PayloadBuffer::Chunk::Chunk(
         size_t length)
     :   dataM(0),
-        lengthM(length),
-        nextM(0)
+        lengthM(length)
     {
         if(lengthM > 0)
         {
