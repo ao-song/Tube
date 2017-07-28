@@ -30,7 +30,8 @@ TcpConnection::accept(
         return false;
     }
 
-    stateM = Established;
+    set_events(EPOLLIN);
+
     return true;
 }
 
@@ -45,31 +46,10 @@ TcpConnection::connect(
 {
     assert(stateM == Idle);
 
-    InetAddress destinationAddress;
-    destinationAddress.init(destinationIp);
-    destinationAddress.set_port(destinationPort);
-
-    const struct sockaddr* address = destinationAddress.get_address();
-
-    int fd = socket(address->sa_family,
-                    SOCK_STREAM,
-                    0);
-    set_socket(fd);
-
-    if(sendingBufferSize != 0)
-    {
-        set_sending_buffer_size(sendingBufferSize);
-    }
-
-    if(receivingBufferSize != 0)
-    {
-        set_receiving_buffer_size(receivingBufferSize);
-    }
-
-    if(!make_non_blocking(get_socket()))
-    {
-        return false;
-    }
+    init_socket(destinationIp,
+                destinationPort,
+                sendingBufferSize,
+                receivingBufferSize);
 
     // Connect to remote peer   
     if (connect(get_socket(),
@@ -104,6 +84,10 @@ TcpConnection::handle_event(
 
     switch(stateM)
     {
+        case Idle:
+        {
+
+        }
         case Connecting:
         {            
             if(event & EPOLLOUT)
@@ -270,5 +254,49 @@ TcpConnection::send_buffered_data()
     {
         set_events(EPOLLOUT);
         return WaitForEvent;
+    }
+}
+
+void
+TcpConnection::init_socket(
+    const char*        destinationIp,
+    unsigned short     destinationPort,
+    unsigned int       sendingBufferSize,
+    unsigned int       receivingBufferSize)
+{
+    InetAddress destinationAddress;
+    destinationAddress.init(destinationIp);
+    destinationAddress.set_port(destinationPort);
+
+    const struct sockaddr* address = destinationAddress.get_address();
+
+    int fd = socket(address->sa_family,
+                    SOCK_STREAM,
+                    0);
+    set_socket(fd);
+
+    int flag = 1;
+    if (setsockopt(getSocket(), 
+                   SOL_SOCKET, 
+                   SO_REUSEADDR, 
+                   (const char*)&flag, 
+                   sizeof(flag)) != 0)
+    {
+        return false;
+    }
+
+    if(sendingBufferSize != 0)
+    {
+        set_sending_buffer_size(sendingBufferSize);
+    }
+
+    if(receivingBufferSize != 0)
+    {
+        set_receiving_buffer_size(receivingBufferSize);
+    }
+
+    if(!make_non_blocking(get_socket()))
+    {
+        return false;
     }
 }
