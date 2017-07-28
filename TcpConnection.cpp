@@ -38,23 +38,20 @@ TcpConnection::accept(
 
 bool
 TcpConnection::connect(
-    const InetAddress& destinationIp,
+    const char*        destinationIp,
     unsigned short     destinationPort,
     unsigned int       sendingBufferSize,
     unsigned int       receivingBufferSize)
 {
     assert(stateM == Idle);
 
-    int              inetFamily;
-    sockaddr_storage address;
-    socklen_t        addressLen;
+    InetAddress destinationAddress;
+    destinationAddress.init(destinationIp);
+    destinationAddress.set_port(destinationPort);
 
-    destinationIp.get_socket_address(inetFamily, 
-                                     address, 
-                                     destinationPort, 
-                                     addressLen);
+    const struct sockaddr* address = destinationAddress.get_address();
 
-    int fd = socket(((const struct sockaddr*)&address)->sa_family,
+    int fd = socket(address->sa_family,
                     SOCK_STREAM,
                     0);
     set_socket(fd);
@@ -76,8 +73,8 @@ TcpConnection::connect(
 
     // Connect to remote peer   
     if (connect(get_socket(),
-                (const struct sockaddr*)&address,
-                addressLen) != 0)
+                address,
+                sizeof(address)) != 0)
     {
         if (errno == EINPROGRESS)
         {
@@ -200,7 +197,7 @@ TcpConnection::send(
 
     const size_t bytesSent = static_cast<const size_t>(sendResult);
 
-    if (bytesSent == theBufferLength)
+    if (bytesSent == bufferLength)
     {
         reset_events(EPOLLOUT);
         return CallAgain;

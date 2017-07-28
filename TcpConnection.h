@@ -44,7 +44,7 @@ namespace Tube
         virtual
         bool
         connect(
-            const InetAddress& destinationIp,
+            const char*        destinationIp,
             unsigned short     destinationPort,
             unsigned int       sendingBufferSize = 0,
             unsigned int       receivingBufferSize = 0);
