@@ -28,7 +28,7 @@ InetAddress::init(
                 {
                     ipVersion = IPv6
                 }
-                else if(!isdigit(ipStr))
+                else if(!isdigit(*ipStr))
                 {
                     // what is this then?
                     return false;
@@ -124,7 +124,7 @@ InetAddress::init(
     else
     {
         // IPv6
-        const struct sockaddr_in6 addrV6 = 
+        const struct sockaddr_in6* addrV6 = 
             reinterpret_cast<const struct sockaddr_in6*>(address);
         if(addressLength <= sizeof(addressM))
         {
