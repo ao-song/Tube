@@ -3,6 +3,11 @@
 
 #include <cctype>
 #include <cassert>
+#include <cstring>
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 namespace Tube
 {
@@ -56,8 +61,8 @@ namespace Tube
         get_socket_address(
             int&              inetFamily,
             sockaddr_storage& address,
-            unsigned short    port,
-            socklen_t         addressLength) const;
+            unsigned short&   port,
+            socklen_t&        addressLength) const;
 
     private:
         void
@@ -116,7 +121,7 @@ namespace Tube
     InetAddress::operator==(
         const InetAddress& other) const
     {
-        return (addressM.addrIn4.sin_family == AF_INET) ?
+        return (addressM.addrRaw.sin_family == AF_INET) ?
                 memcmp(&addressM.addrIn4,
                        &other.addressM.addrIn4,
                        sizeof(addressM.addrIn4)) == 0 :
@@ -164,21 +169,21 @@ namespace Tube
     InetAddress::get_socket_address(
         int&              inetFamily,
         sockaddr_storage& address,
-        unsigned short    port,
-        socklen_t         addressLength) const
+        unsigned short&   port,
+        socklen_t&        addressLength) const
     {
         inetFamily = addressM.addrRaw.sa_family;
         if(inetFamily == AF_INET)
         {
             addressLength = sizeof(addressM.addrIn4);
             memcpy(&address, &addressM.addrIn4, addressLength);
-            ((struct sockaddr_in*)&address)->sin_port = htons(port);
+            port = ntohs(((struct sockaddr_in*)&address)->sin_port);
         }
         else
         {
             addressLength = sizeof(addressM.addrIn6);
             memcpy(&address, &addressM.addrIn6, addressLength);
-            ((struct sockaddr_in6*)&address)->sin6_port = htons(port);
+            port = ntohs(((struct sockaddr_in6*)&address)->sin6_port);
         }
     }
 
