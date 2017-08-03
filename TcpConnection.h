@@ -33,6 +33,13 @@ namespace Tube
       
         virtual
         ~TcpConnection();
+
+        void
+        init_socket(
+            const char*        destinationIp,
+            unsigned short     destinationPort,
+            unsigned int       sendingBufferSize = 0,
+            unsigned int       receivingBufferSize = 0);
       
       
         virtual
@@ -123,13 +130,7 @@ namespace Tube
       bool
       set_receiving_buffer_size(
           unsigned int receivingBufferSize);
-
-      void
-      init_socket(
-          const char*        destinationIp,
-          unsigned short     destinationPort,
-          unsigned int       sendingBufferSize = 0,
-          unsigned int       receivingBufferSize = 0);
+      
    
       TcpConnectionOwner* connectionOwnerM;
       PayloadBuffer       sendBufferM;
