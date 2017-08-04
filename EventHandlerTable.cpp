@@ -18,9 +18,11 @@ EventHandlerTable::handle_events()
    {
       EventHandler* eventHandler = 
           static_cast<EventHandler*>(EventsM[i].data.ptr);
+      int fd = EventsM[i].data.fd;
 
       assert(eventHandler != 0);
-      if (eventHandler->handle_event(EventsM[i].events) == false)
+      if (eventHandler->handle_event(EventsM[i].events,
+                                     fd) == false)
       {
           eventHandler->close();
       }

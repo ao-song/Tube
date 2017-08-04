@@ -2,7 +2,14 @@
 #define EVENTHANDLER_H
 
 #include <cassert>
+#include <arpa/inet.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <ifaddrs.h>
+#include <netinet/in.h>
 #include <sys/epoll.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 
 namespace Tube
@@ -49,7 +56,8 @@ namespace Tube
         virtual
         bool
         handle_event(
-            unsigned int event) = 0;
+            unsigned int event,
+            int fd) = 0;
 
         
     

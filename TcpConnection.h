@@ -1,6 +1,10 @@
 #ifndef TCPCONNECTION_H
 #define TCPCONNECTION_H
 
+#include "EventHandler.h"
+#include "InetAddress.h"
+#include "PayloadBuffer.h"
+
 // ----------------------------------------------------------------------------
 
 namespace Tube
@@ -23,7 +27,8 @@ namespace Tube
         {
             Idle,
             Connecting,
-            Established
+            Established,
+            Listen
         } State; 
 
         TcpConnection(
@@ -33,13 +38,6 @@ namespace Tube
       
         virtual
         ~TcpConnection();
-
-        void
-        init_socket(
-            const char*        destinationIp,
-            unsigned short     destinationPort,
-            unsigned int       sendingBufferSize = 0,
-            unsigned int       receivingBufferSize = 0);
       
       
         virtual
@@ -71,7 +69,8 @@ namespace Tube
         virtual
         bool
         handle_event(
-            unsigned int event);      
+            unsigned int event,
+            int fd);      
 
       
         bool
@@ -89,7 +88,7 @@ namespace Tube
       
       
         virtual
-        ssize_t
+        Action
         receive(
             void*  buffer, 
             size_t bufferLength);
@@ -132,9 +131,9 @@ namespace Tube
           unsigned int receivingBufferSize);
       
    
-      TcpConnectionOwner* connectionOwnerM;
-      PayloadBuffer       sendBufferM;
-      State               stateM;
+      TcpConnectionOwner*          connectionOwnerM;
+      PayloadBuffer                sendBufferM;
+      State                        stateM;
     };
 
 // ----------------------------------------------------------------------------
@@ -165,18 +164,6 @@ namespace Tube
     TcpConnection::is_ok_to_send() const
     {
         return (stateM == Established) && sendBufferM.is_empty();
-    }
-
-    inline
-    ssize_t
-    TcpConnection::receive(
-        void*  buffer, 
-        size_t bufferLength)
-    {
-        return recv(get_socket(), 
-                    buffer, 
-                    bufferLength, 
-                    0);
     }
 
 }

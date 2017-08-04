@@ -20,18 +20,86 @@ TcpConnection::~TcpConnection()
 
 bool
 TcpConnection::accept(
-   int socket)
+    unsigned short port,
+    unsigned int   sendingBufferSize,
+    unsigned int   receivingBufferSize)
 {
-    assert(stateM == Idle);
-    set_socket(socket);
- 
+    struct sockaddr_in address;
+    memset(&address, 0, sizeof(address));
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(port);
+
+    int fd = socket(AF_INET,
+                    SOCK_STREAM,
+                    0);
+
+    if(fd == -1)
+    {
+        return false;
+    }
+
+    set_socket(fd);
+
+    if(port == 0)
+    {
+        int flag = 1;
+        if(setsockopt(get_socket(),
+                      SOL_SOCKET,
+                      TCP_PORT_ANY,
+                      (const char*)&flag,
+                      sizeof(flag)) != 0)
+        {
+            return false;
+        }
+    }
+
+    int flag = 1;
+    if (setsockopt(get_socket(), 
+                   SOL_SOCKET, 
+                   SO_REUSEADDR, 
+                   (const char*)&flag, 
+                   sizeof(flag)) != 0)
+    {
+        return false;
+    }
+
+    if(sendingBufferSize != 0)
+    {
+        set_sending_buffer_size(sendingBufferSize);
+    }
+
+    if(receivingBufferSize != 0)
+    {
+        set_receiving_buffer_size(receivingBufferSize);
+    }
+
+    if(port != 0)
+    {
+        if(bind(get_socket(),
+                (const struct sockaddr*)&address,
+                sizeof(address)) != 0)
+        {
+            return false;
+        }
+    }
+
     if(!make_non_blocking(get_socket()))
     {
         return false;
     }
 
-    set_events(EPOLLIN);
+    if(listen(get_socket(get_socket(), SOMAXCONN)) != 0)
+    {
+        return false;
+    }
 
+    if(!set_events(EPOLLIN))
+    {
+        return false;
+    }
+
+    stateM = Listen;
     return true;
 }
 
@@ -46,10 +114,47 @@ TcpConnection::connect(
 {
     assert(stateM == Idle);
 
-    init_socket(destinationIp,
-                destinationPort,
-                sendingBufferSize,
-                receivingBufferSize);
+    InetAddress destinationAddress;
+    destinationAddress.init(destinationIp);
+    destinationAddress.set_port(destinationPort);
+
+    const struct sockaddr* address = destinationAddress.get_address();
+
+    int fd = socket(address->sa_family,
+                    SOCK_STREAM,
+                    0);
+
+    if(fd == -1)
+    {
+        return false;
+    }
+
+    set_socket(fd);
+
+    int flag = 1;
+    if (setsockopt(get_socket(), 
+                   SOL_SOCKET, 
+                   SO_REUSEADDR, 
+                   (const char*)&flag, 
+                   sizeof(flag)) != 0)
+    {
+        return false;
+    }
+
+    if(sendingBufferSize != 0)
+    {
+        set_sending_buffer_size(sendingBufferSize);
+    }
+
+    if(receivingBufferSize != 0)
+    {
+        set_receiving_buffer_size(receivingBufferSize);
+    }
+
+    if(!make_non_blocking(get_socket()))
+    {
+        return false;
+    }
 
     // Connect to remote peer   
     if (connect(get_socket(),
@@ -70,12 +175,13 @@ TcpConnection::connect(
    }
    
    stateM = Established;
-   return connectionOwnerM->handle_events(this, 0); 
+   return connectionOwnerM->handle_events(this, 0);
 }
 
 bool
 TcpConnection::handle_event(
-    unsigned int event)
+    unsigned int event,
+    int fd)
 {
     if(event & (EPOLLHUP | EPOLLERR))
     {
@@ -84,10 +190,6 @@ TcpConnection::handle_event(
 
     switch(stateM)
     {
-        case Idle:
-        {
-
-        }
         case Connecting:
         {            
             if(event & EPOLLOUT)
@@ -101,6 +203,30 @@ TcpConnection::handle_event(
         case Established:
         {
             return connectionOwnerM->handle_events(this, event);
+        }
+        case Listen:
+        {
+            if((fd == get_socket()) && (event & EPOLLIN))
+            {
+                struct sockaddr_storage sourceAddress;
+                socklen_t sourceAddressLength = sizeof(sourceAddress);
+                int newSocket = ::accept(get_socket(),
+                                         (struct sockaddr*)&sourceAddress,
+                                         &sourceAddressLength);
+
+                if(newSocket == -1)
+                {
+                    return false;
+                }
+
+                get_table()->add_event(newSocket, EPOLLIN, this);
+
+                return true;
+            }
+            else
+            {
+                return connectionOwnerM->handle_events(this, event);
+            }           
         }
         default:
         {
@@ -163,10 +289,10 @@ TcpConnection::send(
 {
     assert(sendBufferM.is_empty());
 
-    const ssize_t sendResult = send(get_socket(),
-                                    buffer,
-                                    bufferLength,
-                                    0);
+    const ssize_t sendResult = ::send(get_socket(),
+                                      buffer,
+                                      bufferLength,
+                                      0);
  
     if (sendResult < 0)
     {
@@ -194,6 +320,32 @@ TcpConnection::send(
         set_events(EPOLLOUT);
         return WaitForEvent;
     }
+}
+
+Action
+TcpConnection::receive(
+    void*  buffer, 
+    size_t bufferLength)
+{
+    ssize_t bytesReceived = recv(get_socket(), 
+                                 buffer, 
+                                 bufferLength, 
+                                 0);
+
+    if(bytesReceived < 0)
+    {
+        if(errno == EAGAIN)
+        {
+            set_events(EPOLLIN);
+            return WaitForEvent;
+        }
+        else
+        {
+            return RemoveConnection;
+        }
+    }
+
+    return CallAgain;
 }
 
 
@@ -226,10 +378,10 @@ TcpConnection::send_buffered_data()
         return CallAgain;
     }
 
-    const ssize_t sendResult = send(get_socket(),
-                                    sendBufferM.get_data(),
-                                    bufferLength,
-                                    0);
+    const ssize_t sendResult = ::send(get_socket(),
+                                      sendBufferM.get_data(),
+                                      bufferLength,
+                                      0);
 
     if (sendResult < 0)
     {
@@ -257,46 +409,3 @@ TcpConnection::send_buffered_data()
     }
 }
 
-void
-TcpConnection::init_socket(
-    const char*        destinationIp,
-    unsigned short     destinationPort,
-    unsigned int       sendingBufferSize,
-    unsigned int       receivingBufferSize)
-{
-    InetAddress destinationAddress;
-    destinationAddress.init(destinationIp);
-    destinationAddress.set_port(destinationPort);
-
-    const struct sockaddr* address = destinationAddress.get_address();
-
-    int fd = socket(address->sa_family,
-                    SOCK_STREAM,
-                    0);
-    set_socket(fd);
-
-    int flag = 1;
-    if (setsockopt(getSocket(), 
-                   SOL_SOCKET, 
-                   SO_REUSEADDR, 
-                   (const char*)&flag, 
-                   sizeof(flag)) != 0)
-    {
-        return false;
-    }
-
-    if(sendingBufferSize != 0)
-    {
-        set_sending_buffer_size(sendingBufferSize);
-    }
-
-    if(receivingBufferSize != 0)
-    {
-        set_receiving_buffer_size(receivingBufferSize);
-    }
-
-    if(!make_non_blocking(get_socket()))
-    {
-        return false;
-    }
-}

@@ -1,6 +1,15 @@
 #ifndef EVENTHANDLERTABLE_H
 #define EVENTHANDLERTABLE_H
 
+#include <arpa/inet.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <ifaddrs.h>
+#include <netinet/in.h>
+#include <sys/epoll.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+
 // ----------------------------------------------------------------------------
 
 namespace Tube
