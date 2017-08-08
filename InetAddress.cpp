@@ -26,7 +26,7 @@ InetAddress::init(
                 }
                 else if(isxdigit(*ipStr) || *ipStr == ':')
                 {
-                    ipVersion = IPv6
+                    ipVersion = IPv6;
                 }
                 else if(!isdigit(*ipStr))
                 {
@@ -46,7 +46,7 @@ InetAddress::init(
                         return false;
                     }
 
-                    unsigned char buf[16];
+                    char buf[16];
                     memcpy(buf, startOfAddress, addressLength);
                     buf[addressLength] = 0;
 
@@ -59,7 +59,9 @@ InetAddress::init(
                     memset(&addressM.addrIn4, 0, sizeof(struct sockaddr_in));
                     addressM.addrIn4.sin_family = AF_INET;
                     return inet_pton(
-                        AF_INET, buf, &addressM.addrIn4.sin_addr) == 1;
+                        AF_INET, 
+                        buf, 
+                        &addressM.addrIn4.sin_addr) == 1;
                 }
                 break;
             }
@@ -73,7 +75,7 @@ InetAddress::init(
                         return false;
                     }
 
-                    unsigned char buf[40];
+                    char buf[40];
                     memcpy(buf, startOfAddress, addressLength);
                     buf[addressLength] = 0;
 

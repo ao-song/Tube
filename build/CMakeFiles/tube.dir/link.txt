@@ -1,0 +1,2 @@
+/usr/bin/ar qc libtube.a  CMakeFiles/tube.dir/EventHandlerTable.o CMakeFiles/tube.dir/EventHandler.o CMakeFiles/tube.dir/InetAddress.o CMakeFiles/tube.dir/TcpConnection.o
+/usr/bin/ranlib libtube.a

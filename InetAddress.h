@@ -4,6 +4,7 @@
 #include <cctype>
 #include <cassert>
 #include <cstring>
+#include <string>
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -44,8 +45,7 @@ namespace Tube
         bool
         init(
             const struct sockaddr_storage* address,
-            socklen_t                      addressLength,
-            unsigned short&                port);
+            socklen_t                      addressLength);
 
         void
         set_port(
@@ -103,7 +103,7 @@ namespace Tube
 
     inline
     InetAddress&
-    operator=(
+    InetAddress::operator=(
         const InetAddress& other)
     {
         addressM = other.addressM;
@@ -121,7 +121,7 @@ namespace Tube
     InetAddress::operator==(
         const InetAddress& other) const
     {
-        return (addressM.addrRaw.sin_family == AF_INET) ?
+        return (addressM.addrRaw.sa_family == AF_INET) ?
                 memcmp(&addressM.addrIn4,
                        &other.addressM.addrIn4,
                        sizeof(addressM.addrIn4)) == 0 :

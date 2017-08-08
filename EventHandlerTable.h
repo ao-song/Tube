@@ -9,6 +9,10 @@
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <cstring>
+#include <unistd.h>
+#include <cassert>
+
 
 // ----------------------------------------------------------------------------
 

@@ -10,6 +10,7 @@
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 
 namespace Tube
@@ -45,7 +46,7 @@ namespace Tube
         int
         get_socket() const;
 
-        bool
+        void
         set_et();
         
         virtual
@@ -121,21 +122,7 @@ namespace Tube
         subscribedEventsM |= EPOLLET;    
     }
 
-    inline
-    void
-    EventHandler::close()
-    {
-        if(socketM != -1)
-        {
-            if(subscribedEventsM != 0)
-            {
-                eventHandlerTableM->delete_event(socketM);
-            }
-            ::close(socketM);
-            socketM = -1;
-        }
-    }
-
+    
     inline
     EventHandlerTable*
     EventHandler::get_table()
@@ -151,6 +138,7 @@ namespace Tube
     }
 
     inline
+    void
     EventHandler::set_socket(
         int socket)
     {
