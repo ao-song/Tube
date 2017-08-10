@@ -1,4 +1,6 @@
 #include "TcpConnection.h"
+#include "EventHandlerTable.h"
+#include "TcpConnectionOwner.h"
 
 using namespace Tube;
 
@@ -41,19 +43,6 @@ TcpConnection::accept(
 
     set_socket(fd);
 
-    if(port == 0)
-    {
-        int flag = 1;
-        if(setsockopt(get_socket(),
-                      SOL_SOCKET,
-                      TCP_PORT_ANY,
-                      (const char*)&flag,
-                      sizeof(flag)) != 0)
-        {
-            return false;
-        }
-    }
-
     int flag = 1;
     if (setsockopt(get_socket(), 
                    SOL_SOCKET, 
@@ -89,7 +78,7 @@ TcpConnection::accept(
         return false;
     }
 
-    if(listen(get_socket(get_socket(), SOMAXCONN)) != 0)
+    if(listen(get_socket(), SOMAXCONN) != 0)
     {
         return false;
     }
@@ -157,9 +146,9 @@ TcpConnection::connect(
     }
 
     // Connect to remote peer   
-    if (connect(get_socket(),
-                address,
-                sizeof(address)) != 0)
+    if (::connect(get_socket(),
+                  address,
+                  sizeof(address)) != 0)
     {
         if (errno == EINPROGRESS)
         {
@@ -248,6 +237,8 @@ TcpConnection::make_non_blocking(
     {
        return false;
     }
+
+    return true;
 }
 
 bool
@@ -282,7 +273,7 @@ TcpConnection::set_receiving_buffer_size(
     return true;
 }
 
-Action
+TcpConnection::Action
 TcpConnection::send(
     const void* buffer, 
     size_t      bufferLength)
@@ -322,7 +313,7 @@ TcpConnection::send(
     }
 }
 
-Action
+TcpConnection::Action
 TcpConnection::receive(
     void*  buffer, 
     size_t bufferLength)
@@ -368,7 +359,7 @@ TcpConnection::reset()
     }
 }
 
-Action
+TcpConnection::Action
 TcpConnection::send_buffered_data()
 {
     const size_t bufferLength = sendBufferM.get_length();

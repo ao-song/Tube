@@ -14,7 +14,10 @@ CMakeFiles/tube.dir/InetAddress.o
  /home/pi/github/Tube/InetAddress.h
 CMakeFiles/tube.dir/TcpConnection.o
  /home/pi/github/Tube/EventHandler.h
+ /home/pi/github/Tube/EventHandlerOwner.h
+ /home/pi/github/Tube/EventHandlerTable.h
  /home/pi/github/Tube/InetAddress.h
  /home/pi/github/Tube/PayloadBuffer.h
  /home/pi/github/Tube/TcpConnection.cpp
  /home/pi/github/Tube/TcpConnection.h
+ /home/pi/github/Tube/TcpConnectionOwner.h

@@ -1,6 +1,3 @@
-# Tube - In construction!
+# Tube 
 
-- EventHandlerTable handle_event false HOW?
-- EventHandler epoll_ctl impl?
-- InetAddress Impl
-- Log Impl
+- A non-blocking tcp IO implemented with epoll

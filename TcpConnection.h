@@ -43,7 +43,9 @@ namespace Tube
         virtual
         bool
         accept(
-            int incomingSocket);
+            unsigned short port,
+            unsigned int   sendingBufferSize,
+            unsigned int   receivingBufferSize);
 
       
         virtual

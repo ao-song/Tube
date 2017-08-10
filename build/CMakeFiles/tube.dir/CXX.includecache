@@ -34,6 +34,8 @@ sys/types.h
 unistd.h
 -
 
+/home/pi/github/Tube/EventHandlerOwner.h
+
 /home/pi/github/Tube/EventHandlerTable.cpp
 EventHandlerTable.h
 /home/pi/github/Tube/EventHandlerTable.h
@@ -95,6 +97,10 @@ list
 /home/pi/github/Tube/TcpConnection.cpp
 TcpConnection.h
 /home/pi/github/Tube/TcpConnection.h
+EventHandlerTable.h
+/home/pi/github/Tube/EventHandlerTable.h
+TcpConnectionOwner.h
+/home/pi/github/Tube/TcpConnectionOwner.h
 
 /home/pi/github/Tube/TcpConnection.h
 EventHandler.h
@@ -103,4 +109,8 @@ InetAddress.h
 /home/pi/github/Tube/InetAddress.h
 PayloadBuffer.h
 /home/pi/github/Tube/PayloadBuffer.h
+
+/home/pi/github/Tube/TcpConnectionOwner.h
+EventHandlerOwner.h
+/home/pi/github/Tube/EventHandlerOwner.h
 

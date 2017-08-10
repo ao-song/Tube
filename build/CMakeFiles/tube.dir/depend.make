@@ -13,8 +13,11 @@ CMakeFiles/tube.dir/InetAddress.o: ../InetAddress.cpp
 CMakeFiles/tube.dir/InetAddress.o: ../InetAddress.h
 
 CMakeFiles/tube.dir/TcpConnection.o: ../EventHandler.h
+CMakeFiles/tube.dir/TcpConnection.o: ../EventHandlerOwner.h
+CMakeFiles/tube.dir/TcpConnection.o: ../EventHandlerTable.h
 CMakeFiles/tube.dir/TcpConnection.o: ../InetAddress.h
 CMakeFiles/tube.dir/TcpConnection.o: ../PayloadBuffer.h
 CMakeFiles/tube.dir/TcpConnection.o: ../TcpConnection.cpp
 CMakeFiles/tube.dir/TcpConnection.o: ../TcpConnection.h
+CMakeFiles/tube.dir/TcpConnection.o: ../TcpConnectionOwner.h
 

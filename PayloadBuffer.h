@@ -33,12 +33,12 @@ namespace Tube
             size_t      offset);
 
         // get data from a chunk as an FIFO queue
-        const void*
-        get_data() const;
+        void*
+        get_data();
 
         // get the length of the data in a chunk
         size_t
-        get_length() const;
+        get_length();
 
         void
         clear();
@@ -50,6 +50,7 @@ namespace Tube
         class Chunk
         {
         public:
+            Chunk();
             Chunk(
                 const void* data,
                 size_t      length,
@@ -64,12 +65,13 @@ namespace Tube
             unsigned char* dataM;
             size_t         lengthM;
 
-        private:
-            Chunk(
-                const Chunk& other);
             Chunk&
             operator=(
                 const Chunk& other);
+
+            Chunk(
+                const Chunk& other);
+            
         };
 
     private:
@@ -83,6 +85,11 @@ namespace Tube
     };
 
 // ----------------------------------------------------------------------------
+    inline
+    PayloadBuffer::Chunk::Chunk()
+    {
+        // Empty;
+    }
 
     inline
     PayloadBuffer::Chunk::Chunk(
@@ -112,9 +119,27 @@ namespace Tube
     } 
 
     inline
+    PayloadBuffer::Chunk::Chunk(
+        const Chunk& other)
+    {
+        dataM = other.dataM;
+        lengthM = other.lengthM;
+    }
+
+    inline
     PayloadBuffer::Chunk::~Chunk()
     {
         delete [] dataM;
+    }
+
+    inline
+    PayloadBuffer::Chunk&
+    PayloadBuffer::Chunk::operator=(
+        const Chunk& other)
+    {
+        dataM = other.dataM;
+        lengthM = other.lengthM;
+        return *this;
     }
 
     inline
@@ -164,15 +189,15 @@ namespace Tube
 
     // get data from a chunk as an FIFO queue
     inline
-    const void*
-    PayloadBuffer::get_data() const
+    void*
+    PayloadBuffer::get_data()
     {
         if(!is_empty())
         {
-            Chunk firstChunk = payloadBufferListM.front();
+            unsigned char* data = payloadBufferListM.front().dataM;
             payloadBufferListM.pop_front();
 
-            return firstChunk.dataM;        
+            return data;        
         }       
         
         return 0;
@@ -181,7 +206,7 @@ namespace Tube
     // get the length of the data in a chunk
     inline
     size_t
-    PayloadBuffer::get_length() const
+    PayloadBuffer::get_length()
     {
         if(!is_empty())
         {
