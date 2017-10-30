@@ -1,3 +1,3 @@
 # Tube 
 
-- A non-blocking tcp IO implemented with epoll
+An epoll wrapper.
