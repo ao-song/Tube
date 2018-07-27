@@ -173,7 +173,7 @@ namespace Tube
         socklen_t&        addressLength) const
     {
         inetFamily = addressM.addrRaw.sa_family;
-        if(inetFamily == AF_INET)
+        if (inetFamily == AF_INET)
         {
             addressLength = sizeof(addressM.addrIn4);
             memcpy(&address, &addressM.addrIn4, addressLength);
@@ -193,7 +193,7 @@ namespace Tube
     InetAddress::skip_spaces(
         const char*& str)
     {
-        while(isspace(*str))
+        while (isspace(*str))
         {
             str++;
         }

@@ -14,9 +14,9 @@ EventHandler::~EventHandler()
 void
 EventHandler::close()
 {
-    if(socketM != -1)
+    if (socketM != -1)
     {
-        if(subscribedEventsM != 0)
+        if (subscribedEventsM != 0)
         {
             eventHandlerTableM->delete_event(socketM);
         }
@@ -35,14 +35,14 @@ EventHandler::set_events(
 
     subscribedEventsM |= eventsToSet;
 
-    if(prevSubscribedEvents == 0)
+    if (prevSubscribedEvents == 0)
     {
         eventHandlerTableM->add_event(socketM,
                                       subscribedEventsM,
                                       this);
     }
 
-    if(subscribedEventsM != 0)
+    if (subscribedEventsM != 0)
     {
         eventHandlerTableM->modify_event(socketM,
                                          subscribedEventsM,

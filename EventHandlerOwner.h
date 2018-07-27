@@ -3,16 +3,16 @@
 
 namespace Tube
 {
-   class EventHandlerOwner
-   {
-   public:
+    class EventHandlerOwner
+    {
+    public:
    
-      virtual
-      ~EventHandlerOwner()
-      {
-         // Empty
-      };
-   };
+        virtual
+        ~EventHandlerOwner()
+        {
+            // Empty
+        };
+    };
 }
 
 #endif

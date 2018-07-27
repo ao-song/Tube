@@ -60,7 +60,7 @@ namespace Tube
     private:
    
         EventHandlerTable(
-         const EventHandlerTable& other);
+            const EventHandlerTable& other);
    
         EventHandlerTable&
         operator=(
@@ -86,13 +86,13 @@ namespace Tube
     inline
     EventHandlerTable::~EventHandlerTable()
     {
-        if(FdM != -1)
+        if (FdM != -1)
         {
             close(FdM);
             FdM = -1;
         }
 
-        if(EventsM)
+        if (EventsM)
         {
             delete [] EventsM;
         }

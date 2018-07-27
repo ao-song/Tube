@@ -99,7 +99,7 @@ namespace Tube
     :   dataM(0),
         lengthM(length - offset)
     {
-        if(lengthM > 0)
+        if (lengthM > 0)
         {
             dataM = new unsigned char[lengthM];
             memcpy(dataM, ((const char*)data) + offset, lengthM);
@@ -112,7 +112,7 @@ namespace Tube
     :   dataM(0),
         lengthM(length)
     {
-        if(lengthM > 0)
+        if (lengthM > 0)
         {
             dataM = new unsigned char[lengthM];
         }
@@ -192,7 +192,7 @@ namespace Tube
     void*
     PayloadBuffer::get_data()
     {
-        if(!is_empty())
+        if (!is_empty())
         {
             unsigned char* data = payloadBufferListM.front().dataM;
             payloadBufferListM.pop_front();
@@ -208,7 +208,7 @@ namespace Tube
     size_t
     PayloadBuffer::get_length()
     {
-        if(!is_empty())
+        if (!is_empty())
         {
             Chunk firstChunk = payloadBufferListM.front();
             payloadBufferListM.pop_front();

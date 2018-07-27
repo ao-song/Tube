@@ -36,7 +36,7 @@ TcpConnection::accept(
                     SOCK_STREAM,
                     0);
 
-    if(fd == -1)
+    if (fd == -1)
     {
         return false;
     }
@@ -53,19 +53,19 @@ TcpConnection::accept(
         return false;
     }
 
-    if(sendingBufferSize != 0)
+    if (sendingBufferSize != 0)
     {
         set_sending_buffer_size(sendingBufferSize);
     }
 
-    if(receivingBufferSize != 0)
+    if (receivingBufferSize != 0)
     {
         set_receiving_buffer_size(receivingBufferSize);
     }
 
-    if(port != 0)
+    if (port != 0)
     {
-        if(bind(get_socket(),
+        if (bind(get_socket(),
                 (const struct sockaddr*)&address,
                 sizeof(address)) != 0)
         {
@@ -73,17 +73,17 @@ TcpConnection::accept(
         }
     }
 
-    if(!make_non_blocking(get_socket()))
+    if (!make_non_blocking(get_socket()))
     {
         return false;
     }
 
-    if(listen(get_socket(), SOMAXCONN) != 0)
+    if (listen(get_socket(), SOMAXCONN) != 0)
     {
         return false;
     }
 
-    if(!set_events(EPOLLIN))
+    if (!set_events(EPOLLIN))
     {
         return false;
     }
@@ -113,7 +113,7 @@ TcpConnection::connect(
                     SOCK_STREAM,
                     0);
 
-    if(fd == -1)
+    if (fd == -1)
     {
         return false;
     }
@@ -130,17 +130,17 @@ TcpConnection::connect(
         return false;
     }
 
-    if(sendingBufferSize != 0)
+    if (sendingBufferSize != 0)
     {
         set_sending_buffer_size(sendingBufferSize);
     }
 
-    if(receivingBufferSize != 0)
+    if (receivingBufferSize != 0)
     {
         set_receiving_buffer_size(receivingBufferSize);
     }
 
-    if(!make_non_blocking(get_socket()))
+    if (!make_non_blocking(get_socket()))
     {
         return false;
     }
@@ -172,7 +172,7 @@ TcpConnection::handle_event(
     unsigned int event,
     int fd)
 {
-    if(event & (EPOLLHUP | EPOLLERR))
+    if (event & (EPOLLHUP | EPOLLERR))
     {
         return connectionOwnerM->handle_reset(this);
     }
@@ -181,7 +181,7 @@ TcpConnection::handle_event(
     {
         case Connecting:
         {            
-            if(event & EPOLLOUT)
+            if (event & EPOLLOUT)
             {
                 stateM = Established;
                 return connectionOwnerM->handle_connect_result(this);
@@ -195,7 +195,7 @@ TcpConnection::handle_event(
         }
         case Listen:
         {
-            if((fd == get_socket()) && (event & EPOLLIN))
+            if ((fd == get_socket()) && (event & EPOLLIN))
             {
                 struct sockaddr_storage sourceAddress;
                 socklen_t sourceAddressLength = sizeof(sourceAddress);
@@ -203,7 +203,7 @@ TcpConnection::handle_event(
                                          (struct sockaddr*)&sourceAddress,
                                          &sourceAddressLength);
 
-                if(newSocket == -1)
+                if (newSocket == -1)
                 {
                     return false;
                 }
@@ -245,11 +245,11 @@ bool
 TcpConnection::set_sending_buffer_size(
     unsigned int sendingBufferSize)
 {   
-    if(setsockopt(get_socket(),
-                  SOL_SOCKET,
-                  SO_SNDBUF,
-                  &sendingBufferSize,
-                  sizeof(sendingBufferSize)) != 0)
+    if (setsockopt(get_socket(),
+                   SOL_SOCKET,
+                   SO_SNDBUF,
+                   &sendingBufferSize,
+                   sizeof(sendingBufferSize)) != 0)
     {
         return false;
     }
@@ -261,11 +261,11 @@ bool
 TcpConnection::set_receiving_buffer_size(
     unsigned int receivingBufferSize)
 {
-    if(setsockopt(get_socket(),
-                  SOL_SOCKET,
-                  SO_RCVBUF,
-                  &receivingBufferSize,
-                  sizeof(receivingBufferSize)) != 0)
+    if (setsockopt(get_socket(),
+                   SOL_SOCKET,
+                   SO_RCVBUF,
+                   &receivingBufferSize,
+                   sizeof(receivingBufferSize)) != 0)
     {
         return false;
     }
@@ -323,9 +323,9 @@ TcpConnection::receive(
                                  bufferLength, 
                                  0);
 
-    if(bytesReceived < 0)
+    if (bytesReceived < 0)
     {
-        if(errno == EAGAIN)
+        if (errno == EAGAIN)
         {
             set_events(EPOLLIN);
             return WaitForEvent;
@@ -343,7 +343,7 @@ TcpConnection::receive(
 void
 TcpConnection::reset()
 {
-    if(get_socket() != -1)
+    if (get_socket() != -1)
     {
         struct linger so_linger;
         // force exit
@@ -363,7 +363,7 @@ TcpConnection::Action
 TcpConnection::send_buffered_data()
 {
     const size_t bufferLength = sendBufferM.get_length();
-    if(bufferLength == 0)
+    if (bufferLength == 0)
     {
         reset_events(EPOLLOUT);
         return CallAgain;
@@ -387,7 +387,7 @@ TcpConnection::send_buffered_data()
     const size_t bytesSent =
         static_cast<const size_t>(sendResult);
 
-    if(bytesSent == bufferLength)
+    if (bytesSent == bufferLength)
     {
         assert(sendBufferM.is_empty());
         reset_events(EPOLLOUT);

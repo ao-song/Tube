@@ -20,15 +20,15 @@ InetAddress::init(
         {
             case None:
             {               
-                if(*ipStr == '.')
+                if (*ipStr == '.')
                 {
                     ipVersion = IPv4;
                 }
-                else if(isxdigit(*ipStr) || *ipStr == ':')
+                else if (isxdigit(*ipStr) || *ipStr == ':')
                 {
                     ipVersion = IPv6;
                 }
-                else if(!isdigit(*ipStr))
+                else if (!isdigit(*ipStr))
                 {
                     // what is this then?
                     return false;
@@ -37,10 +37,10 @@ InetAddress::init(
             }
             case IPv4:
             {
-                if(!(isdigit(*ipStr) || (*ipStr == '.')))
+                if (!(isdigit(*ipStr) || (*ipStr == '.')))
                 {
                     size_t addressLength = ipStr - startOfAddress;
-                    if(addressLength > 15)
+                    if (addressLength > 15)
                     {
                         // not an IP address
                         return false;
@@ -51,7 +51,7 @@ InetAddress::init(
                     buf[addressLength] = 0;
 
                     skip_spaces(ipStr);
-                    if(*ipStr != 0)
+                    if (*ipStr != 0)
                     {
                         return false;
                     }
@@ -67,10 +67,10 @@ InetAddress::init(
             }
             case IPv6:
             {
-                if(!(isxdigit(*ipStr) || (*ipStr == ':')))
+                if (!(isxdigit(*ipStr) || (*ipStr == ':')))
                 {
                     size_t addressLength = ipStr - startOfAddress;
-                    if(addressLength > 39)
+                    if (addressLength > 39)
                     {
                         return false;
                     }
@@ -80,7 +80,7 @@ InetAddress::init(
                     buf[addressLength] = 0;
 
                     skip_spaces(ipStr);
-                    if(*ipStr != 0)
+                    if (*ipStr != 0)
                     {
                         return false;
                     }
@@ -109,12 +109,12 @@ InetAddress::init(
     const struct sockaddr_storage* address,
     socklen_t                      addressLength)
 {
-    if(reinterpret_cast<const struct sockaddr*>(address)->sa_family == AF_INET)
+    if (reinterpret_cast<const struct sockaddr*>(address)->sa_family == AF_INET)
     {
         // IPv4
         const struct sockaddr_in* addrV4 = 
             reinterpret_cast<const struct sockaddr_in*>(address);
-        if(addressLength <= sizeof(addressM))
+        if (addressLength <= sizeof(addressM))
         {
             memcpy(&addressM, addrV4, addressLength);
         }
@@ -128,7 +128,7 @@ InetAddress::init(
         // IPv6
         const struct sockaddr_in6* addrV6 = 
             reinterpret_cast<const struct sockaddr_in6*>(address);
-        if(addressLength <= sizeof(addressM))
+        if (addressLength <= sizeof(addressM))
         {
             memcpy(&addressM, addrV6, addressLength);
         }
