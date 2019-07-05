@@ -13,7 +13,6 @@ namespace Tube
     public:
         PayloadBuffer();
 
-        explicit
         PayloadBuffer(
             const void* data,
             size_t      length,
